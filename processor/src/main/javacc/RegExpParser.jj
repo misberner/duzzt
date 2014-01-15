@@ -1,0 +1,173 @@
+/*
+ * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+options {
+	LOOKAHEAD = 1;
+	STATIC = false;
+}
+
+PARSER_BEGIN(DuzztRegExpParser)
+
+package com.github.misberner.duzzt.re.parser;
+
+import com.github.misberner.duzzt.re.*;
+import com.github.misberner.duzzt.exceptions.DuzztRegExpParseException;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.StringReader;
+
+public class DuzztRegExpParser {
+	public static DuzztRegExp parse(String s) throws DuzztRegExpParseException {
+		DuzztRegExpParser parser = new DuzztRegExpParser(new StringReader(s));
+		try {
+			return parser.start();
+		}
+		catch(ParseException ex) {
+			throw new DuzztRegExpParseException(ex);
+		}
+	}
+}
+
+PARSER_END(DuzztRegExpParser)
+
+TOKEN:
+{
+	<ID: ["a"-"z","A"-"Z","_","$"](["a"-"z","A"-"Z","_","$","0"-"9"])*>
+|	<LBRACK: "[">
+|	<RBRACK: "]">
+|	<LBRACE: "{">
+|	<RBRACE: "}">
+|	<LPAREN: "(">
+|	<RPAREN: ")">
+|	<LANGLE: "<">
+|	<RANGLE: ">">
+|	<ALT: "|">
+|	<PLUS: "+">
+|	<STAR: "*">
+|	<QMARK: "?">
+}
+
+SKIP:
+{
+	" "
+|	"\t"
+|	"\r"
+|	"\n"
+}
+
+DuzztRegExp start():
+{
+	DuzztRegExp re;
+}
+{
+	re=regExp() <EOF>
+	{ return re; }
+}
+
+DuzztRegExp regExp():
+{
+	DuzztRegExp re;
+}
+{
+	re=altRegExp()
+	{ return re; }
+}
+
+DuzztRegExp altRegExp():
+{
+	DuzztRegExp re;
+	List<DuzztRegExp> res;
+}
+{
+	re=concatRegExp()
+	[
+		{ res = new ArrayList<DuzztRegExp>(); res.add(re); }
+		(<ALT> re=concatRegExp() { res.add(re); } )+
+		{ return new DuzztREAlt(res); }
+	]
+	{ return re; }
+}
+
+DuzztRegExp concatRegExp():
+{
+	DuzztRegExp re;
+	List<DuzztRegExp> res;
+}
+{
+	re=modifierRegExp()
+	[
+		{ res = new ArrayList<DuzztRegExp>(); res.add(re); }
+		(re=modifierRegExp() { res.add(re); } )+
+		{ return new DuzztREConcat(res); }
+	]
+	{ return re; }
+}
+
+DuzztRegExp modifierRegExp():
+{
+	DuzztRegExp re;
+	char modChar;
+}
+{
+	re=atomicRegExp()
+	[
+		(
+			<QMARK> { modChar = '?'; }
+		|	<STAR> { modChar = '*'; }
+		|	<PLUS> { modChar = '+'; }
+		)
+		{ return new DuzztREModifier(re, modChar); }
+	]
+	{ return re; }
+}
+
+DuzztRegExp atomicRegExp():
+{
+	DuzztRegExp re;
+}
+{
+	(
+		re=identifierRegExp()
+	|	re=subexpRegExp()
+	|	<LPAREN> re=regExp() <RPAREN>
+	)
+	{ return re; }
+}
+
+DuzztRegExp identifierRegExp():
+{
+	String name;
+}
+{
+	name=identifier()
+	{ return new DuzztREIdentifier(name); }
+}
+
+DuzztRegExp subexpRegExp():
+{
+	String name;
+}
+{
+	<LANGLE> name=identifier() <RANGLE> { return new DuzztRESubexpr(name); }
+}
+
+String identifier():
+{
+	Token t;
+}
+{
+	t=<ID> { return t.image; }
+}

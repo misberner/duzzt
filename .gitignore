@@ -1,0 +1,20 @@
+# Backup files
+*~
+
+# JVM error logs
+hs_err_pid*.log
+
+# Maven output directory
+/target/
+
+# Eclipse output directory
+/bin/
+# Eclipse settings
+/.classpath
+/.project
+/.settings/
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.next
+release.properties
