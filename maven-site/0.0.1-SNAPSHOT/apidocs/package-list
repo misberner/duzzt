@@ -1,0 +1,9 @@
+com.github.misberner.duzzt
+com.github.misberner.duzzt.annotations
+com.github.misberner.duzzt.automaton
+com.github.misberner.duzzt.bricscompiler
+com.github.misberner.duzzt.exceptions
+com.github.misberner.duzzt.model
+com.github.misberner.duzzt.processor
+com.github.misberner.duzzt.re
+com.github.misberner.duzzt.re.parser
