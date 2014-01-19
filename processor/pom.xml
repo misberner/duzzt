@@ -20,13 +20,13 @@
 	<parent>
 		<groupId>com.github.misberner.duzzt</groupId>
 		<artifactId>duzzt-parent</artifactId>
-		<version>0.0.1</version>
+		<version>0.0.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>com.github.misberner.duzzt</groupId>
 	<artifactId>duzzt-processor</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 
