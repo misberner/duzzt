@@ -14,9 +14,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-	http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -27,7 +25,7 @@
 
 	<groupId>com.github.misberner.duzzt</groupId>
 	<artifactId>duzzt-parent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>pom</packaging>
 
 
@@ -74,8 +72,8 @@
 	<properties>
 		<compiler-plugin.version>3.1</compiler-plugin.version>
 		<javacc-plugin.version>2.6</javacc-plugin.version>
-		<ap-commons.version>0.0.1-SNAPSHOT</ap-commons.version>
-		<stringtemplate.version>4.0.2</stringtemplate.version>
+		<ap-commons.version>0.0.1</ap-commons.version>
+		<stringtemplate.version>4.0.7</stringtemplate.version>
 		<brics-automaton.version>1.11-8</brics-automaton.version>
 	</properties>
 
@@ -137,7 +135,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.antlr</groupId>
-				<artifactId>stringtemplate</artifactId>
+				<artifactId>ST4</artifactId>
 				<version>${stringtemplate.version}</version>
 			</dependency>
 			<dependency> 
