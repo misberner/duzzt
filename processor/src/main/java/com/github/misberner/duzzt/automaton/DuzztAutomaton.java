@@ -33,15 +33,17 @@ public class DuzztAutomaton {
 	
 	
 	/**
-	 * Constructor. Constructs a Duzzt automaton from a Brics automaton, using
-	 * the specified mapping from characters to actions.
+	 * Constructor. Initializes a Duzzt automaton from a collection of states
+	 * and an initial states.
 	 * 
-	 * @param bricsAutomaton the Brics automaton
-	 * @param actions the character to action mapping
+	 * @param states the states of the automaton
+	 * @param init the initial state of the automaton, must be part of {@code states}
+	 * @throws IllegalArgumentException if {@code states} does not contain {@code init}.
 	 */
-	public DuzztAutomaton(Collection<? extends DuzztState> states, DuzztState init) {
+	public DuzztAutomaton(Collection<? extends DuzztState> states, DuzztState init)
+			throws IllegalArgumentException {
 		if(!states.contains(init)) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Initial state not contained in state set");
 		}
 		this.states = new ArrayList<>(states);
 		this.init = init;

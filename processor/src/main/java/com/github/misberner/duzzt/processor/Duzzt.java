@@ -148,8 +148,9 @@ public class Duzzt {
 	 * Process an annotated element.
 	 * 
 	 * @param elem the element to process (must be class or interface)
-	 * @param dsl the annotation specifying the EDSL
-	 * @param elementUtils {@link javax.lang.model.Element} utilities class
+	 * @param annotation the annotation specifying the EDSL
+	 * @param elementUtils {@link javax.lang.model} element utilities class
+	 * @param typeUtils {@link javax.lang.model} type utilities
 	 * @param filer the {@link Filer} used to write output files
 	 * @param reporter reporter for error and warning reporting
 	 * 
