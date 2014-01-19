@@ -30,7 +30,7 @@ import com.github.misberner.duzzt.annotations.GenerateEmbeddedDSL;
  * @author Malte Isberner <malte.isberner@gmail.com>
  *
  */
-public class GenerateEDSLProcessor extends AbstractSingleAnnotationProcessor<GenerateEmbeddedDSL> {
+final class GenerateEDSLProcessor extends AbstractSingleAnnotationProcessor<GenerateEmbeddedDSL> {
 	
 	private final Duzzt duzzt = new Duzzt();
 
@@ -63,7 +63,7 @@ public class GenerateEDSLProcessor extends AbstractSingleAnnotationProcessor<Gen
 		
 		Reporter reporter = utils.getReporter(elem, annotationMirror);
 		
-		duzzt.process(elem, annotation, utils.getElementUtils(), utils.getFiler(), reporter);
+		duzzt.process(elem, annotation, utils.getElementUtils(), utils.getTypeUtils(), utils.getFiler(), reporter);
 	}
 	
 	

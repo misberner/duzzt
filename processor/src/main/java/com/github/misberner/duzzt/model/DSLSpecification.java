@@ -15,60 +15,64 @@
  */
 package com.github.misberner.duzzt.model;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 import com.github.misberner.apcommons.util.ElementUtils;
 import com.github.misberner.apcommons.util.NameUtils;
-import com.github.misberner.duzzt.DuzztDiagnosticListener;
-import com.github.misberner.duzzt.annotations.GenerateEmbeddedDSL;
-import com.github.misberner.duzzt.processor.Duzzt;
+import com.github.misberner.apcommons.util.Visibility;
 import com.github.misberner.duzzt.re.DuzztRegExp;
-import com.github.misberner.duzzt.re.parser.DuzztRegExpParser;
 
 public class DSLSpecification {
 	
-	private final String className;
+	
+	public static DSLSpecification create(
+			TypeElement type,
+			DSLSettings settings,
+			Elements elementUtils,
+			Types typeUtils) {
+		ImplementationModel model = ImplementationModel.create(type, settings, elementUtils, typeUtils);
+		
+		return new DSLSpecification(settings, model);
+	}
+	
+	private final DSLSettings settings;
 	private final String packageName;
+	private final boolean samePackage;
 	
 	private final ImplementationModel implementation;
-	private final DuzztRegExp dslSyntax;
-	private final Map<String,DuzztRegExp> subExpressions;
 	
 	
-	public DSLSpecification(TypeElement type, GenerateEmbeddedDSL dsl,
-			Elements elementUtils, DuzztDiagnosticListener dl) {
+	private DSLSpecification(DSLSettings settings, ImplementationModel model) {
 		
-		this.className = dsl.name();
-		String implPackage = ElementUtils.getPackageName(type);
-		this.packageName = NameUtils.resolvePackageName(dsl.packageName(), implPackage);
+		this.settings = settings;
+		String implPackage = ElementUtils.getPackageName(model.getType());
+		this.packageName = NameUtils.resolvePackageName(settings.getPackageRef(), implPackage);
+		this.samePackage = implPackage.equals(packageName);
 	
-		this.implementation = new ImplementationModel(type, elementUtils, dsl);
-		this.dslSyntax = DuzztRegExpParser.parse(dsl.syntax());
-		this.subExpressions = Duzzt.getSubexpressions(dl, dsl.where());
+		this.implementation = model;
 	}
 	
-	public DSLSpecification(String className,
-			String packageName,
-			ImplementationModel implementation,
-			DuzztRegExp dslSyntax,
-			Map<String,DuzztRegExp> subExpressions) {
-		this.className = className;
-		this.packageName = packageName;
-		this.implementation = implementation;
-		this.dslSyntax = dslSyntax;
-		this.subExpressions = subExpressions;
+	public List<ForwardConstructor> getForwardConstructors() {
+		Visibility minVis = (samePackage) ? Visibility.PACKAGE_PRIVATE : Visibility.PUBLIC;
+		return implementation.getForwardConstructors(minVis);
 	}
+	
 	
 	public DuzztRegExp getDSLSyntax() {
-		return dslSyntax;
+		return settings.getSyntax();
 	}
 	
-	public Map<String,DuzztRegExp> getSubExpressions() {
-		return Collections.unmodifiableMap(subExpressions);
+	public Map<String,SubExpression> getSubExpressions() {
+		return settings.getSubExpressions();
+	}
+	
+	public Visibility getDelegateConstructorVisibility() {
+		return Visibility.of(implementation.getType()).meet(settings.getDelegateConstructorVisibility());
 	}
 	
 	public ImplementationModel getImplementation() {
@@ -77,7 +81,7 @@ public class DSLSpecification {
 	
 	
 	public String getClassName() {
-		return className;
+		return settings.getName();
 	}
 	
 	public String getPackageName() {
@@ -89,10 +93,10 @@ public class DSLSpecification {
 	}
 	
 	public String getQualifiedClassName() {
-		if(packageName == null || packageName.isEmpty()) {
-			return className;
+		if(packageName.isEmpty()) {
+			return settings.getName();
 		}
-		return packageName + "." + className;
+		return packageName + "." + settings.getName();
 	}
-
+	
 }

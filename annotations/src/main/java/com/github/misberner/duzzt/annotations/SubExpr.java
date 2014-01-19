@@ -33,6 +33,23 @@ import java.lang.annotation.Target;
 @Target({})
 @Retention(RetentionPolicy.SOURCE)
 public @interface SubExpr {
+	/**
+	 * The name of this subexpression.
+	 */
 	public String name();
+	
+	/**
+	 * The definition of this subexpression. The syntax follows that of
+	 * {@link GenerateEmbeddedDSL#syntax()}.
+	 */
 	public String definedAs();
+	
+	/**
+	 * Specifies whether this subexpression defines its own scope. If set to {@code true},
+	 * the operators <tt>^</tt>, <tt>/</tt>, and <tt>!</tt> refer to the beginning, middle,
+	 * or end, respectively, of this subexpression. The default is {@code false}, meaning they
+	 * refer to the nearest enclosing subexpression defining its own scope (or the top-level
+	 * expression).
+	 */
+	public boolean ownScope() default false;
 }

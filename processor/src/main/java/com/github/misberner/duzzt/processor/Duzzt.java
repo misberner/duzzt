@@ -31,6 +31,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 
 import org.stringtemplate.v4.AutoIndentWriter;
@@ -43,37 +44,17 @@ import com.github.misberner.apcommons.reporting.Reporter;
 import com.github.misberner.apcommons.util.ElementUtils;
 import com.github.misberner.duzzt.DuzztDiagnosticListener;
 import com.github.misberner.duzzt.annotations.GenerateEmbeddedDSL;
-import com.github.misberner.duzzt.annotations.SubExpr;
 import com.github.misberner.duzzt.automaton.DuzztAutomaton;
 import com.github.misberner.duzzt.bricscompiler.BricsCompiler;
 import com.github.misberner.duzzt.exceptions.DuzztInitializationException;
-import com.github.misberner.duzzt.exceptions.DuzztRegExpParseException;
+import com.github.misberner.duzzt.model.DSLSettings;
 import com.github.misberner.duzzt.model.DSLSpecification;
 import com.github.misberner.duzzt.model.ImplementationModel;
 import com.github.misberner.duzzt.re.DuzztREUtil;
 import com.github.misberner.duzzt.re.DuzztRegExp;
-import com.github.misberner.duzzt.re.parser.DuzztRegExpParser;
 
 public class Duzzt {
 	
-	public static Map<String,DuzztRegExp> getSubexpressions(DuzztDiagnosticListener el, SubExpr... subExprs) {
-		Map<String,DuzztRegExp> result = new HashMap<>();
-		
-		for(SubExpr se : subExprs) {
-			String name = se.name();
-			String regexStr = se.definedAs();
-			
-			try {
-				DuzztRegExp re = DuzztRegExpParser.parse(regexStr);
-				result.put(name, re);
-			}
-			catch(DuzztRegExpParseException ex) {
-				el.unparseableExpression(ex, name);
-			}
-		}
-		
-		return result;
-	}
 	
 	public static boolean checkExpressions(DuzztDiagnosticListener el, ImplementationModel im, DuzztRegExp re, Map<String,DuzztRegExp> subExpressions) {
 		return doCheck(el, im, re, null, subExpressions, new HashMap<String,Integer>());
@@ -174,8 +155,8 @@ public class Duzzt {
 	 * 
 	 * @throws IOException if writing the generated source code fails 
 	 */
-	public void process(Element elem, GenerateEmbeddedDSL dsl,
-			Elements elementUtils, Filer filer, Reporter reporter) throws IOException {
+	public void process(Element elem, GenerateEmbeddedDSL annotation,
+			Elements elementUtils, Types typeUtils, Filer filer, Reporter reporter) throws IOException {
 		
 		if(!ElementUtils.checkElementKind(elem, ElementKind.CLASS, ElementKind.INTERFACE)) {
 			throw new IllegalArgumentException("Annotation " + GenerateEmbeddedDSL.class.getSimpleName()
@@ -186,7 +167,9 @@ public class Duzzt {
 		
 		ReporterDiagnosticListener dl = new ReporterDiagnosticListener(reporter);
 		
-		DSLSpecification spec = new DSLSpecification(te, dsl, elementUtils, dl);
+		DSLSettings settings = new DSLSettings(annotation);
+		
+		DSLSpecification spec = DSLSpecification.create(te, settings, elementUtils, typeUtils);
 		
 		BricsCompiler compiler = new BricsCompiler(spec.getImplementation());
 		

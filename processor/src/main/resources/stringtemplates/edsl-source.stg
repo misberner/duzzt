@@ -53,7 +53,7 @@ public final class <spec.className><generic_params(spec.implementation.typeParam
 
 >>
 
-state_class_name(spec, state) ::= "<if(state.initial)><spec.className><generic_args(spec.implementation.typeParameters)><else>__Duzzt_State<state.id><endif>"
+state_class_name(spec, state) ::= "<if(state.initial)><spec.className><generic_args(spec.implementation.typeParameters)><else><spec.className>__<state.id><endif>"
 state_field_name(spec, state) ::= "__duzzt_state<state.id>"
 state_field_decl(spec, state) ::= "private <state_class_name(spec, state)> <state_field_name(spec, state)> = null;"
  
@@ -131,16 +131,24 @@ initial_state_methods(spec, automaton) ::= <<
 
 constructors(spec) ::= <<
 <forward_constructors(spec)>
+
+<delegate_constructor(spec)>
 >>
 
 
 forward_constructors(spec) ::= <<
-<spec.implementation.publicConstructorInfos:{ci|<forward_constructor(spec, ci)>}; separator="\n">
+<spec.forwardConstructors:{fc|<forward_constructor(spec, fc)>}; separator="\n">
 >>
 
-forward_constructor(spec, c) ::= <<
-public <generic_params(c.typeParameters)><spec.className>(<c.parameters;separator=", ">)<throws_spec(c.thrownTypes)> {
-	this.<impl_field_name(spec)> = new <generic_args(c.typeParameters)><spec.implementation.type><generic_args(spec.implementation.typeParameters)>(<args(c.parameters)>);
+delegate_constructor(spec) ::= <<
+<spec.delegateConstructorVisibility.prefix><spec.className>(<spec.implementation.type><generic_args(spec.implementation.typeParameters)> implementation) {
+	this.<impl_field_name(spec)> = implementation;
+}
+>>
+
+forward_constructor(spec, fc) ::= <<
+<fc.visibility.prefix><generic_params(fc.typeParameters)><spec.className>(<fc.parameters;separator=", ">)<throws_spec(fc.thrownTypes)> {
+	this.<impl_field_name(spec)> = new <generic_args(fc.typeParameters)><spec.implementation.type><generic_args(spec.implementation.typeParameters)>(<args(fc.parameters)>);
 }
 >>
 

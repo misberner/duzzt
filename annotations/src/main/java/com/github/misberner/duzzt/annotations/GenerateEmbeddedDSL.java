@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.github.misberner.apcommons.util.Visibility;
+
 /**
  * Generate an embedded DSL from the target class or interface.
  * <p>
@@ -77,7 +79,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface GenerateEmbeddedDSL {
 	/**
-	 * The unqualified name of the EDSL class to generate. This is a
+	 * The simple (i.e., unqualified) name of the EDSL class to generate. This is a
 	 * mandatory option.
 	 */
 	public String name();
@@ -95,15 +97,34 @@ public @interface GenerateEmbeddedDSL {
 	 * forming the result package name.</li>
 	 * <li>otherwise, the value is taken as the package name as-is.
 	 * </ul>
+	 * <p>
+	 * The default value is {@code "."}.
 	 */
 	public String packageName() default ".";
 	
 	/**
-	 * The syntax of the embedded DSL, specified as a regular expression.
+	 * The syntax of the embedded DSL, specified as a regular expression. This is a mandatory
+	 * option.
 	 * <p>
 	 * See above for a syntax definition for regular expressions.
 	 */
 	public String syntax();
+	
+	/**
+	 * Specifies whether the generated DSL class should be declared as {@code public}. If set
+	 * to {@code false}, it will have package-private visibility.
+	 * <p>
+	 * The default setting is {@code true}.
+	 */
+	public boolean classPublic() default true;
+	
+	/**
+	 * Specifies whether the generated DSL class should be declared as {@code final}. If set to
+	 * {@code false}, it will be non-{@code final}.
+	 * <p>
+	 * The default setting is {@code false}.
+	 */
+	public boolean classFinal() default false;
 	
 	/**
 	 * Named subexpressions that can be used in the embedded DSL syntax definition.
@@ -114,37 +135,69 @@ public @interface GenerateEmbeddedDSL {
 	 * <p>
 	 * Subexpressions are specified as regular expressions. See above for
 	 * a syntax definition for regular expressions.
+	 * <p>
+	 * The default value is <tt>{}</tt>, meaning that no subexpressions are declared.
 	 */
 	public SubExpr[] where() default {};
 	
 	/**
 	 * Automatically generate variable argument overloads for all suitable
-	 * methods. The default is <tt>true</tt>.
+	 * methods.
 	 * <p>
 	 * The global behavior can be overridden on a per-method basis by setting
 	 * {@link DSLAction#autoVarArgs()}.
+	 * <p>
+	 * The default setting is {@code true}.
 	 */
 	public boolean autoVarArgs() default true;
+	
+	/**
+	 * <p>
+	 * The default setting is {@code false}.
+	 */
+	public boolean nonVoidTerminators() default false;
 	
 	/**
 	 * Automatically treat all methods (excluding those defined by the
 	 * {@link Object} class) as actions of the embedded DSL. If set to {@code false},
 	 * only those methods annotated with a {@link DSLAction} annotation and have
 	 * {@link DSLAction#disable()} set to {@code false} will be available as
-	 * DSL actions. The default value is {@code true}.
+	 * DSL actions.
+	 * <p>
+	 * The default setting is {@code true}.
 	 */
 	public boolean enableAllMethods() default true;
 	
 	/**
-	 * Also consider inherited methods as potential DSL actions. If set to {@code false},
+	 * Consider inherited methods as potential DSL actions. If set to {@code false},
 	 * only those methods directly declared in this class will be regarded as potential
-	 * DSL actions. The default is {@code true}.
+	 * DSL actions.
+	 * <p>
+	 * The default setting is {@code true}.
 	 */
 	public boolean includeInherited() default true;
 	
+	
 	/**
-	 * Treat all DSL action methods with a non-{@code void} return type
-	 * as terminator actions. The default is {@code false}.
+	 * Controls whether to automatically generate forwards for all visible constructors.
+	 * If set to {@code false}, only those constructors annotated with {@link DSLConstructor}
+	 * will be forwarded. If set to {@code true}, forwarding of a single constructor can be
+	 * effectively prevented by annotating it with {@link DSLConstructor} and setting
+	 * {@link DSLConstructor#value()} to {@link Visibility#PRIVATE}.
+	 * <p>
+	 * The default setting is {@code true}.
 	 */
-	public boolean nonVoidTerminators() default false;
+	public boolean forwardAllConstructors() default true;
+	
+	/**
+	 * Controls the visibility of the delegate constructor, i.e., the constructor which takes
+	 * an instance of the DSL implementation as argument. If no such constructor should be visible,
+	 * set this to {@link Visibility#PRIVATE}. Note that the visibility of the generated
+	 * delegate constructor will never be higher than that of the DSL implementation.
+	 * <p>
+	 * The default setting is {@link Visibility#PUBLIC}.
+	 */
+	public Visibility delegateConstructorVisibility() default Visibility.PUBLIC;
+	
+	public Visibility forwardConstructorVisibility() default Visibility.PUBLIC;
 }

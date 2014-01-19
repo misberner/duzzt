@@ -20,6 +20,9 @@ import com.github.misberner.apcommons.processing.MultiModuleProcessor;
 public class DuzztMainProcessor extends MultiModuleProcessor {
 	
 	public DuzztMainProcessor() {
-		super(new GenerateEDSLProcessor());
+		super(
+				new CheckDSLActionUsage(),
+				new CheckDSLConstructorUsage(),
+				new GenerateEDSLProcessor());
 	}
 }

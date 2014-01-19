@@ -15,15 +15,29 @@
  */
 package com.github.misberner.duzzt.re;
 
+import java.util.Collections;
+import java.util.List;
 
-public interface DuzztREVisitor<R, D> {
-	R visit(DuzztREAlt re, D data);
-	R visit(DuzztREConcat re, D data);
-	R visit(DuzztREIdentifier re, D data);
-	R visit(DuzztREModifier re, D data);
-	R visit(DuzztRESubexpr re, D data);
-	R visit(DuzztRENonEmpty re, D data);
-	R visit(DuzztREStart re, D data);
-	R visit(DuzztREEnd re, D data);
-	R visit(DuzztREInner re, D data);
+public class DuzztRENonEmpty implements DuzztComplexRegExp {
+
+	private final DuzztRegExp sub;
+	
+	public DuzztRENonEmpty(DuzztRegExp sub) {
+		this.sub = sub;
+	}
+	
+	public DuzztRegExp getSub() {
+		return sub;
+	}
+	
+	@Override
+	public <R, D> R accept(DuzztREVisitor<R, D> visitor, D data) {
+		return visitor.visit(this, data);
+	}
+
+	@Override
+	public List<? extends DuzztRegExp> getChildren() {
+		return Collections.singletonList(sub);
+	}
+
 }

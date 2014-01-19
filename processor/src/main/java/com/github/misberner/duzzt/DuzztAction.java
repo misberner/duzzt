@@ -16,39 +16,47 @@
 package com.github.misberner.duzzt;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-import com.github.misberner.apcommons.util.ParameterInfo;
-import com.github.misberner.apcommons.util.ParameterUtils;
-import com.github.misberner.duzzt.annotations.AutoVarArgs;
+import com.github.misberner.apcommons.util.annotations.AnnotationUtils;
+import com.github.misberner.apcommons.util.methods.MethodUtils;
+import com.github.misberner.apcommons.util.methods.ParameterInfo;
 import com.github.misberner.duzzt.annotations.DSLAction;
+import com.github.misberner.duzzt.model.DSLSettings;
 
 public class DuzztAction {
 	
-	public static DuzztAction get(ExecutableElement methodElement, boolean defaultEnable, boolean defaultAutoVarArgs) {
-		boolean global = false;
-		boolean terminator = false;
-		boolean enable = defaultEnable;
-		boolean autoVarArgs = defaultAutoVarArgs;
+	public static DuzztAction fromMethod(ExecutableElement methodElement, DSLSettings settings) {
 		String name = methodElement.getSimpleName().toString();
+		
+		boolean global = false;
+		boolean enable = settings.isEnableAllMethods();
+		boolean autoVarArgs = settings.isDefaultAutoVarArgs(methodElement);
+		boolean terminator = settings.isDefaultTerminator(methodElement);
 		
 		DSLAction actionAnn = methodElement.getAnnotation(DSLAction.class);
 		if(actionAnn != null) {
-			enable = !actionAnn.disable();
+			Set<String> valuesSet
+				= AnnotationUtils.getAnnotationValues(methodElement, DSLAction.class).keySet();
+			
+			enable = actionAnn.enable();
 			if(!enable) {
 				return null;
 			}
 			
 			global = actionAnn.global();
-			terminator = actionAnn.terminator();
 			
-			AutoVarArgs autoVA = actionAnn.autoVarArgs();
-			if(autoVA != AutoVarArgs.DEFAULT) {
-				autoVarArgs = (autoVA == AutoVarArgs.ENABLE); 
+			if(valuesSet.contains("terminator")) {
+				terminator = actionAnn.terminator();
+			}
+			
+			if(valuesSet.contains("autoVarArgs")) {
+				autoVarArgs = actionAnn.autoVarArgs(); 
 			}
 		}
 		else if(!enable) {
@@ -71,7 +79,7 @@ public class DuzztAction {
 	public DuzztAction(ExecutableElement methodElement, String name, boolean global,
 			boolean terminator, boolean autoVarArgs) {
 		this.methodElement = methodElement;
-		this.parameters = ParameterUtils.getParameters(methodElement);
+		this.parameters = MethodUtils.getParameterInfos(methodElement);
 		this.name = name;
 		this.global = global;
 		this.terminator = terminator;

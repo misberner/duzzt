@@ -18,6 +18,7 @@ package com.github.misberner.duzzt;
 import java.util.Map;
 
 import com.github.misberner.duzzt.automaton.DuzztAutomaton;
+import com.github.misberner.duzzt.model.SubExpression;
 import com.github.misberner.duzzt.re.DuzztRegExp;
 
 /**
@@ -30,6 +31,6 @@ import com.github.misberner.duzzt.re.DuzztRegExp;
  *
  */
 public interface DuzztCompiler {
-	DuzztAutomaton compile(DuzztRegExp re, Map<String,DuzztRegExp> subExpressions);
+	DuzztAutomaton compile(DuzztRegExp re, Map<String,SubExpression> subExpressions);
 
 }

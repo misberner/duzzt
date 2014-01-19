@@ -24,54 +24,29 @@ import java.util.Set;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
-import com.github.misberner.apcommons.util.ParameterInfo;
-import com.github.misberner.apcommons.util.ParameterUtils;
+import com.github.misberner.apcommons.util.Visibility;
+import com.github.misberner.apcommons.util.types.TypeUtils;
 import com.github.misberner.duzzt.DuzztAction;
-import com.github.misberner.duzzt.annotations.GenerateEmbeddedDSL;
 
 public class ImplementationModel {
 	
-	public static class ConstructorInfo {
-		private static final ConstructorInfo DEFAULT_CTOR = new ConstructorInfo();
+	public static ImplementationModel create(
+			TypeElement type,
+			DSLSettings settings,
+			Elements elementUtils,
+			Types typeUtils) {
+		ImplementationModel model = new ImplementationModel(type);
+		model.initialize(settings, elementUtils, typeUtils);
 		
-		public static ConstructorInfo getDefaultInstance() {
-			return DEFAULT_CTOR;
-		}
-		
-		private final List<? extends TypeParameterElement> typeParameters;
-		private final List<? extends TypeMirror> thrownTypes;
-		private final List<ParameterInfo> parameters;
-		
-		public ConstructorInfo(ExecutableElement elem) {
-			this.typeParameters = elem.getTypeParameters();
-			this.thrownTypes = elem.getThrownTypes();
-			this.parameters = ParameterUtils.getParameters(elem);
-		}
-		
-		private ConstructorInfo() {
-			this.typeParameters = Collections.emptyList();
-			this.thrownTypes = Collections.emptyList();
-			this.parameters = Collections.emptyList();
-		}
-		
-		public List<? extends TypeParameterElement> getTypeParameters() {
-			return typeParameters;
-		}
-		
-		public List<ParameterInfo> getParameters() {
-			return parameters;
-		}
-		
-		public List<? extends TypeMirror> getThrownTypes() {
-			return thrownTypes;
-		}
+		return model;
 	}
 	
 	private final TypeElement type;
@@ -80,37 +55,48 @@ public class ImplementationModel {
 	private final List<DuzztAction> globalActions = new ArrayList<>();
 	private final List<DuzztAction> terminatorActions = new ArrayList<>();
 	
-	public ImplementationModel(TypeElement type, Elements elementUtils, GenerateEmbeddedDSL ann) {
+	private final List<ForwardConstructor> forwardConstructors = new ArrayList<>();
+	
+	private ImplementationModel(TypeElement type) {
+		if(Visibility.of(type) == Visibility.PRIVATE) {
+			throw new IllegalArgumentException("Visibility of implementation class "
+					+ type + " must not be private");
+		}
+		
 		this.type = type;
-		findActions(ann, elementUtils);
+	}
+	
+	private void initialize(DSLSettings settings, Elements elementUtils, Types typeUtils) {
+		findForwardConstructors(settings, typeUtils);
+		findActions(settings, elementUtils);
 	}
 	
 	public TypeElement getType() {
 		return type;
 	}
 	
+	public Visibility getVisibility() {
+		return Visibility.of(type);
+	}
+	
+	public boolean isStandaloneInstantiable() {
+		return TypeUtils.isStandaloneInstantiable(type);
+	}
+	
 	public List<? extends TypeParameterElement> getTypeParameters() {
 		return type.getTypeParameters();
 	}
 	
-
-	public List<ConstructorInfo> getPublicConstructorInfos() {
-		List<? extends ExecutableElement> allCtors = ElementFilter.constructorsIn(type.getEnclosedElements());
-		
-		if(allCtors.isEmpty()) {
-			return Collections.singletonList(ConstructorInfo.getDefaultInstance());
+	public List<ForwardConstructor> getForwardConstructors(Visibility minVisibility) {
+		if(minVisibility == Visibility.PACKAGE_PRIVATE) {
+			return Collections.unmodifiableList(forwardConstructors);
 		}
+		List<ForwardConstructor> result = new ArrayList<>();
 		
-		List<ExecutableElement> publicCtors = new ArrayList<>();
-		for(ExecutableElement ctor : allCtors) {
-			if(ctor.getModifiers().contains(Modifier.PUBLIC)) {
-				publicCtors.add(ctor);
+		for(ForwardConstructor fwdCtor : forwardConstructors) {
+			if(fwdCtor.getOriginalVisibility().compareTo(minVisibility) >= 0) {
+				result.add(fwdCtor);
 			}
-		}
-		
-		List<ConstructorInfo> result = new ArrayList<>();
-		for(ExecutableElement ctor : publicCtors) {
-			result.add(new ConstructorInfo(ctor));
 		}
 		
 		return result;
@@ -141,9 +127,9 @@ public class ImplementationModel {
 	}
 	
 	
-	private void findActions(GenerateEmbeddedDSL dslAnnotation, Elements elementUtils) {
+	private void findActions(DSLSettings settings, Elements elementUtils) {
 		List<? extends Element> members;
-		if(dslAnnotation.includeInherited()) {
+		if(settings.isIncludeInherited()) {
 			members = elementUtils.getAllMembers(type);
 		}
 		else {
@@ -151,11 +137,8 @@ public class ImplementationModel {
 		}
 		List<? extends ExecutableElement> methods = ElementFilter.methodsIn(members);
 		
-		boolean defaultEnable = dslAnnotation.enableAllMethods();
-		boolean defaultAutoVarArgs = dslAnnotation.autoVarArgs();
-		
 		for(ExecutableElement m : methods) {
-			DuzztAction a = DuzztAction.get(m, defaultEnable, defaultAutoVarArgs);
+			DuzztAction a = DuzztAction.fromMethod(m, settings);
 			if(a != null) {
 				String name = a.getName();
 				List<DuzztAction> lst = actionLists.get(name);
@@ -172,6 +155,38 @@ public class ImplementationModel {
 				if(a.isTerminator()) {
 					terminatorActions.add(a);
 				}
+			}
+		}
+	}
+	
+	private void findForwardConstructors(DSLSettings settings, Types typeUtils) {
+		if(!TypeUtils.isStandaloneInstantiable(type)) {
+			return;
+		}
+		
+		List<ExecutableElement> constructors = TypeUtils.getConstructors(type);
+		
+		for(ExecutableElement ctor : constructors) {
+			if(Visibility.of(ctor) == Visibility.PRIVATE) {
+				continue;
+			}
+			
+			List<? extends VariableElement> params = ctor.getParameters();
+			// Check if the erasure of this parameter list conflicts
+			// with the delegate constructor
+			if(params.size() == 1) {
+				VariableElement param = params.get(0);
+				TypeMirror erasedParamType = typeUtils.erasure(param.asType());
+				TypeMirror erasedImplType = typeUtils.erasure(type.asType());
+				if(erasedParamType.equals(erasedImplType)) {
+					continue;
+				}
+			}
+			
+			ForwardConstructor fwd = ForwardConstructor.from(ctor, settings);
+			
+			if(fwd != null) {
+				forwardConstructors.add(fwd);
 			}
 		}
 	}

@@ -15,15 +15,20 @@
  */
 package com.github.misberner.duzzt.re;
 
+public class DuzztREStart implements DuzztRegExp {
+	
+	private static final DuzztREStart INSTANCE = new DuzztREStart();
+	
+	public static DuzztREStart getInstance() {
+		return INSTANCE;
+	}
+	
+	private DuzztREStart() {
+	}
 
-public interface DuzztREVisitor<R, D> {
-	R visit(DuzztREAlt re, D data);
-	R visit(DuzztREConcat re, D data);
-	R visit(DuzztREIdentifier re, D data);
-	R visit(DuzztREModifier re, D data);
-	R visit(DuzztRESubexpr re, D data);
-	R visit(DuzztRENonEmpty re, D data);
-	R visit(DuzztREStart re, D data);
-	R visit(DuzztREEnd re, D data);
-	R visit(DuzztREInner re, D data);
+	@Override
+	public <R, D> R accept(DuzztREVisitor<R, D> visitor, D data) {
+		return visitor.visit(this, data);
+	}
+
 }

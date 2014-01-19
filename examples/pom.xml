@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
- Copyright (c) 2013-2014 by Malte Isberner (https://github.com/misberner).
+ Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -19,27 +19,44 @@
 	http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.github.misberner.duzzt</groupId>
-		<artifactId>duzzt-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
-
-	<artifactId>duzzt-annotations</artifactId>
+	<groupId>com.github.misberner.duzzt</groupId>
+	<artifactId>duzzt-examples</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 
-	<name>Duzzt :: Annotations</name>
+	<name>Duzzt :: Examples</name>
 	<description>
-		Annotations for Duzzt.
+		Duzzt Examples
 	</description>
-	
+
+	<properties>
+		<compiler-plugin.version>3.1</compiler-plugin.version>
+		<java.version>1.7</java.version>
+		<duzzt.version>0.0.1-SNAPSHOT</duzzt.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${compiler-plugin.version}</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
 	<dependencies>
 		<dependency>
-			<groupId>com.github.misberner.ap-commons</groupId>
-			<artifactId>ap-commons</artifactId>
+			<groupId>com.github.misberner.duzzt</groupId>
+			<artifactId>duzzt-processor</artifactId>
+			<version>${duzzt.version}</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
-

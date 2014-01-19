@@ -23,6 +23,14 @@ import java.lang.annotation.Target;
 /**
  * Explicitly declares a method as being available as a EDSL action. Furthermore,
  * this option allows to further configure the role of this action in the EDSL.
+ * <p>
+ * The {@link DSLAction} annotation is used illegally if:
+ * <ul>
+ * <li>the enclosing type is not annotated with a {@link GenerateEmbeddedDSL} annotation.</li>
+ * <lI>it is used on an override of one of the methods defined by the {@link Object} class.</li>
+ * </ul>
+ * Furthermore, it is discouraged to explicitly specify any other values if {@link #enable()}
+ * is set to {@code false}.
  * 
  * @author Malte Isberner <malte.isberner@gmail.com>
  *
@@ -32,17 +40,17 @@ import java.lang.annotation.Target;
 public @interface DSLAction {
 	
 	/**
-	 * Setting this to <tt>true</tt> explicitly flags a method as not being available
-	 * as a DSL symbol. This is typically used to override the default of all methods
-	 * being used as DSL symbols, as set through
-	 * {@link GenerateEmbeddedDSL#enableAllMethods()}.
+	 * Enables this method as a DSL action. Defaults to {@code true}. If set to
+	 * {@code false}, it is discouraged to explicitly set any other values for
+	 * this annotation.
 	 */
-	public boolean disable() default false;
+	public boolean enable() default true;
 	
 	
 	public boolean global() default false;
 	
 	public boolean terminator() default false;
 	
-	public AutoVarArgs autoVarArgs() default AutoVarArgs.DEFAULT;
+	public boolean autoVarArgs() default true;
+	
 }

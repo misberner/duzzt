@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.misberner.duzzt.processor;
+package com.github.misberner.duzzt.examples.dateadder;
 
-import org.stringtemplate.v4.misc.STMessage;
+import java.util.Date;
 
-class STException extends RuntimeException {
+/**
+ * Usage example for the generated DateAdder.
+ * 
+ * @author Malte Isberner <malte.isberner@gmail.com>
+ *
+ */
+public class DateAdderUsage {
 	
-	private static final long serialVersionUID = 1L;
-	
-	public STException(STMessage msg) {
-		super(msg.toString());
+	public static void main(String[] args) {
+		Date now = new Date();
+		Date future = new DateAdder()
+			.add(5).days()
+			.and(2).minutes()
+			.and(10).seconds()
+			.to(now);
+		
+		System.out.println("The date 5 days, 2 minutes, and 10 seconds from now: " + future);
 	}
 }

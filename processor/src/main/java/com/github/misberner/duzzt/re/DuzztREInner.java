@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.misberner.duzzt.annotations;
+package com.github.misberner.duzzt.re;
 
-/**
- * Values to control automatic generations of variable argument overloads,
- * set on a per-method basis through {@link DSLAction#autoVarArgs()}.
- * 
- * <p>
- * See also: <a href="GenerateEmbeddedDSL.html#auto_varargs">Automatic Variable Arguments
- * Overloads</a> in class {@linkplain GenerateEmbeddedDSL#auto_varargs}.
- *  
- * @author Malte Isberner <malte.isberner@gmail.com>
- *
- * 
- */
-public enum AutoVarArgs {
-	ENABLE,
-	DISABLE,
-	DEFAULT
+public class DuzztREInner implements DuzztRegExp {
+	
+	public static DuzztREInner getInstance() {
+		return INSTANCE;
+	}
+	
+	private static final DuzztREInner INSTANCE = new DuzztREInner();
+	
+	private DuzztREInner() {
+	}
+
+	@Override
+	public <R, D> R accept(DuzztREVisitor<R, D> visitor, D data) {
+		return visitor.visit(this, data);
+	}
+
 }

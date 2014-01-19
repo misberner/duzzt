@@ -56,5 +56,25 @@ public class AbstractDuzztREVisitor<R, D> implements DuzztREVisitor<R, D> {
 	public R visit(DuzztRESubexpr re, D data) {
 		return defaultVisit(re, data);
 	}
+	
+	@Override
+	public R visit(DuzztRENonEmpty re, D data) {
+		return defaultVisitComplex(re, data);
+	}
+
+	@Override
+	public R visit(DuzztREStart re, D data) {
+		return defaultVisit(re, data);
+	}
+
+	@Override
+	public R visit(DuzztREEnd re, D data) {
+		return defaultVisit(re, data);
+	}
+
+	@Override
+	public R visit(DuzztREInner re, D data) {
+		return defaultVisit(re, data);
+	}
 
 }

@@ -52,6 +52,11 @@ TOKEN:
 |	<RBRACE: "}">
 |	<LPAREN: "(">
 |	<RPAREN: ")">
+|	<HAT: "^">
+|	<EXCL: "!">
+|	<SLASH: "/">
+|	<DLANGLE: "<<">
+|	<DRANGLE: ">>">
 |	<LANGLE: "<">
 |	<RANGLE: ">">
 |	<ALT: "|">
@@ -140,8 +145,10 @@ DuzztRegExp atomicRegExp():
 }
 {
 	(
-		re=identifierRegExp()
+		re=singleTokenRegExp()
+	|	re=identifierRegExp()
 	|	re=subexpRegExp()
+	|	re=nonEmptyRegExp()
 	|	<LPAREN> re=regExp() <RPAREN>
 	)
 	{ return re; }
@@ -162,6 +169,22 @@ DuzztRegExp subexpRegExp():
 }
 {
 	<LANGLE> name=identifier() <RANGLE> { return new DuzztRESubexpr(name); }
+}
+
+DuzztRegExp nonEmptyRegExp():
+{
+	DuzztRegExp re;
+}
+{
+	<DLANGLE> re=regExp() <DRANGLE> { return new DuzztRENonEmpty(re); }
+}
+
+DuzztRegExp singleTokenRegExp():
+{}
+{
+	<HAT> { return DuzztREStart.getInstance(); }
+|	<EXCL> { return DuzztREEnd.getInstance(); }
+|	<SLASH> { return DuzztREInner.getInstance(); }
 }
 
 String identifier():
