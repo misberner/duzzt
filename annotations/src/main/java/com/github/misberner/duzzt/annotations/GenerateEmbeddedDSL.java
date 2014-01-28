@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.github.misberner.apcommons.util.AFModifier;
 import com.github.misberner.apcommons.util.Visibility;
 
 /**
@@ -124,7 +126,7 @@ public @interface GenerateEmbeddedDSL {
 	 * <p>
 	 * The default setting is {@code false}.
 	 */
-	public boolean classFinal() default false;
+	public AFModifier modifier() default AFModifier.DEFAULT;
 	
 	/**
 	 * Named subexpressions that can be used in the embedded DSL syntax definition.

@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +23,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
+import com.github.misberner.apcommons.util.AFModifier;
 import com.github.misberner.apcommons.util.ElementUtils;
 import com.github.misberner.apcommons.util.NameUtils;
 import com.github.misberner.apcommons.util.Visibility;
@@ -98,5 +100,14 @@ public class DSLSpecification {
 		}
 		return packageName + "." + settings.getName();
 	}
-	
+
+	public boolean isClassPublic() {
+		return settings.isClassPublic();
+	}
+
+	public AFModifier getModifier() {
+		return settings.getModifier();
+	}
+
+
 }

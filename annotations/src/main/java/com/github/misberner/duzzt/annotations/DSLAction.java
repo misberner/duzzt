@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,9 +31,9 @@ import java.lang.annotation.Target;
  * <lI>it is used on an override of one of the methods defined by the {@link Object} class.</li>
  * </ul>
  * Furthermore, it is discouraged to explicitly specify any other values if {@link #enable()}
- * is set to {@code false}.
+ * is set to {@code false}. Doing so will result in a warning.
  * 
- * @author Malte Isberner <malte.isberner@gmail.com>
+ * @author Malte Isberner
  *
  */
 @Target(ElementType.METHOD)
@@ -42,11 +43,15 @@ public @interface DSLAction {
 	/**
 	 * Enables this method as a DSL action. Defaults to {@code true}. If set to
 	 * {@code false}, it is discouraged to explicitly set any other values for
-	 * this annotation.
+	 * this annotation. Doing so will result in a warning.
 	 */
 	public boolean enable() default true;
 	
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public boolean global() default false;
 	
 	public boolean terminator() default false;

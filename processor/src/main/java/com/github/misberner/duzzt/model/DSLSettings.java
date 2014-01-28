@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,6 +23,7 @@ import java.util.Map;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeKind;
 
+import com.github.misberner.apcommons.util.AFModifier;
 import com.github.misberner.apcommons.util.Visibility;
 import com.github.misberner.duzzt.annotations.GenerateEmbeddedDSL;
 import com.github.misberner.duzzt.annotations.SubExpr;
@@ -40,7 +42,7 @@ public class DSLSettings {
 		
 		return result;
 	}
-	
+
 	private final String name;
 	private final String packageRef;
 	
@@ -53,6 +55,9 @@ public class DSLSettings {
 	private final boolean nonVoidTerminators;
 	
 	private final boolean includeInherited;
+
+	private boolean classPublic;
+	private AFModifier modifier;
 	
 	private final Visibility delegateConstructorVisibility;
 	private final Visibility forwardConstructorVisibility;
@@ -72,6 +77,9 @@ public class DSLSettings {
 		this.nonVoidTerminators = annotation.nonVoidTerminators();
 		
 		this.includeInherited = annotation.includeInherited();
+
+		this.classPublic = annotation.classPublic();
+		this.modifier = annotation.modifier();
 	}
 	
 	public String getName() {
@@ -134,5 +142,17 @@ public class DSLSettings {
 		}
 		
 		return (method.getReturnType().getKind() == TypeKind.VOID);
+	}
+
+	public boolean isNonVoidTerminators() {
+		return nonVoidTerminators;
+	}
+
+	public boolean isClassPublic() {
+		return classPublic;
+	}
+
+	public AFModifier getModifier() {
+		return modifier;
 	}
 }

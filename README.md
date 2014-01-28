@@ -17,7 +17,7 @@ The easiest way to use *Duzzt* is when using [Apache Maven](http://maven.apache.
 <dependency>
     <groupId>com.github.misberner.duzzt</groupId>
     <artifactId>duzzt-processor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2</version>
     <!-- This will make sure the dependency is non-transitive! -->
     <scope>provided</scope>
 </dependency>
