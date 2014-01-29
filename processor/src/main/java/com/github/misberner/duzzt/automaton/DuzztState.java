@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +32,7 @@ import com.github.misberner.duzzt.DuzztAction;
  */
 public class DuzztState {
 	
-	private final int id;
+	private int id;
 	private final Map<DuzztAction,DuzztTransition> transitions = new HashMap<>();
 	private boolean initial = false;
 	
@@ -51,8 +52,11 @@ public class DuzztState {
 	public int getId() {
 		return id;
 	}
-	
-	
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	void setInitial(boolean initial) {
 		this.initial = initial;
 	}

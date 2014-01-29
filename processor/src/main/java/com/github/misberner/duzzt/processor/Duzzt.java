@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -175,6 +176,9 @@ public class Duzzt {
 		BricsCompiler compiler = new BricsCompiler(spec.getImplementation());
 		
 		DuzztAutomaton automaton = compiler.compile(spec.getDSLSyntax(), spec.getSubExpressions());
+
+		// Make sure classes have same name if generated twice from the same spec
+		automaton.reassignStateIds(typeUtils);
 		
 		render(spec, automaton, filer, dl);
 	}

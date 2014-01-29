@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +16,8 @@
  */
 package com.github.misberner.duzzt;
 
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +25,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import com.github.misberner.apcommons.util.annotations.AnnotationUtils;
 import com.github.misberner.apcommons.util.methods.MethodUtils;
@@ -30,6 +34,67 @@ import com.github.misberner.duzzt.annotations.DSLAction;
 import com.github.misberner.duzzt.model.DSLSettings;
 
 public class DuzztAction {
+
+	public static class ActionComparator implements Comparator<DuzztAction> {
+
+		private final Types types;
+
+		public ActionComparator(Types types) {
+			this.types = types;
+		}
+
+		@Override
+		public int compare(DuzztAction o1, DuzztAction o2) {
+			// identity should the only form of equality of actions
+			if(o1 == o2) {
+				return 0;
+			}
+
+			String name1 = o1.name, name2 = o2.name;
+			int nameCmp = name1.compareTo(name2);
+			if(nameCmp != 0) {
+				return nameCmp;
+			}
+
+			String methName1 = o1.methodElement.getSimpleName().toString();
+			String methName2 = o2.methodElement.getSimpleName().toString();
+
+			int methNameCmp = methName1.compareTo(methName2);
+			if(methNameCmp != 0) {
+				return methNameCmp;
+			}
+
+			List<ParameterInfo> params1 = o1.parameters, params2 = o2.parameters;
+
+			if(params1.size() != params2.size()) {
+				return params1.size() - params2.size();
+			}
+
+			Iterator<? extends ParameterInfo> it1 = params1.iterator(), it2 = params2.iterator();
+
+			while(it1.hasNext()) {
+				ParameterInfo p1 = it1.next();
+				ParameterInfo p2 = it2.next();
+				String erased1Name = types.erasure(p1.getType()).toString();
+				String erased2Name = types.erasure(p2.getType()).toString();
+
+				int paramCmp = erased1Name.compareTo(erased2Name);
+				if(paramCmp != 0) {
+					return paramCmp;
+				}
+			}
+
+			String erased1Ret = types.erasure(o1.getReturnType()).toString();
+			String erased2Ret = types.erasure(o2.getReturnType()).toString();
+
+			int retCmp = erased1Ret.compareTo(erased2Ret);
+			if(retCmp != 0) {
+				return retCmp;
+			}
+
+			throw new AssertionError("Duzzt action '" + name1 + "' exists twice");
+		}
+	}
 	
 	public static DuzztAction fromMethod(ExecutableElement methodElement, DSLSettings settings) {
 		String name = methodElement.getSimpleName().toString();
@@ -137,4 +202,5 @@ public class DuzztAction {
 	public List<ParameterInfo> getParameters() {
 		return parameters;
 	}
+
 }

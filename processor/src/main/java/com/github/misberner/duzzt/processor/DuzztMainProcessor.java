@@ -1,6 +1,7 @@
 /*
+ *
  * Copyright (c) 2014 by Malte Isberner (https://github.com/misberner).
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +18,10 @@ package com.github.misberner.duzzt.processor;
 
 import com.github.misberner.apcommons.processing.MultiModuleProcessor;
 
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
+
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class DuzztMainProcessor extends MultiModuleProcessor {
 	
 	public DuzztMainProcessor() {
