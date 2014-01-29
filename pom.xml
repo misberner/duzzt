@@ -27,7 +27,7 @@
 
 	<groupId>com.github.misberner.duzzt</groupId>
 	<artifactId>duzzt-parent</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.2</version>
 	<packaging>pom</packaging>
 
 
@@ -96,6 +96,14 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>${deploy-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<configuration>
+						<!-- Perform an install into the local repository, otherwise the javadoc plugin and archetype integration tests will fail -->
+						<preparationGoals>clean install</preparationGoals>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
