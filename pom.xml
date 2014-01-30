@@ -27,7 +27,7 @@
 
 	<groupId>com.github.misberner.duzzt</groupId>
 	<artifactId>duzzt-parent</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 
