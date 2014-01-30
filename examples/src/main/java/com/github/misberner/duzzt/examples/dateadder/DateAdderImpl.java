@@ -24,13 +24,18 @@ import com.github.misberner.duzzt.annotations.GenerateEmbeddedDSL;
 import com.github.misberner.duzzt.annotations.SubExpr;
 
 
+/**
+ * A sample DSL implementation for a date adder.
+ *
+ * @author Malte Isberner
+ */
 @GenerateEmbeddedDSL(
 		name = "DateAdder",
 		syntax = "(<add> days)? (<add> hours)? (<add> minutes)? (<add> seconds)? to",
 		where = {
 				@SubExpr(name = "add", definedAs="^add|/and")
 		})
-final class DateAdderImpl {
+public final class DateAdderImpl {
 	private static final class FieldIncrement {
 		public final int field;
 		public final int amount;
