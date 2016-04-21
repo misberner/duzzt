@@ -49,6 +49,8 @@ edsl_class(spec, automaton, generatorClass, generationDate) ::= <<
 	<constructors(spec)>
 	
 	<initial_state_methods(spec, automaton)>
+
+	<to_string(spec)>
 }
 
 >>
@@ -85,6 +87,7 @@ automaton_state_decl(spec, state) ::= <<
 state_class_decl(spec, state) ::= <<
 public final class <state_class_name(spec, state)> {
 	<state.transitions:{t|<state_transition(spec, t)>}; separator="\n">
+	<state_to_string(spec)>
 }
 >>
 
@@ -180,3 +183,15 @@ generic_args(tp) ::= <<
 type_parameter(t) ::= <<
 <t><if(t.bounds)> extends <t.bounds; separator=" & "><endif>
 >>
+
+to_string(spec) ::= <<
+public String toString() {
+    return this.<impl_field_name(spec)>.toString();
+}
+>>
+state_to_string(spec) ::= <<
+public String toString() {
+    return <spec.className>.this.toString();
+}
+>>
+
