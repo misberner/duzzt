@@ -45,7 +45,7 @@ public class ImplementationModel {
 			Types typeUtils) {
 		ImplementationModel model = new ImplementationModel(type);
 		model.initialize(settings, elementUtils, typeUtils);
-		
+
 		return model;
 	}
 	
@@ -138,7 +138,8 @@ public class ImplementationModel {
 		List<? extends ExecutableElement> methods = ElementFilter.methodsIn(members);
 		
 		for(ExecutableElement m : methods) {
-			DuzztAction a = DuzztAction.fromMethod(m, settings);
+			String docComment = elementUtils.getDocComment(m);
+			DuzztAction a = DuzztAction.fromMethod(m, settings, docComment);
 			if(a != null) {
 				String name = a.getName();
 				List<DuzztAction> lst = actionLists.get(name);

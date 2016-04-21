@@ -96,7 +96,7 @@ public class DuzztAction {
 		}
 	}
 	
-	public static DuzztAction fromMethod(ExecutableElement methodElement, DSLSettings settings) {
+	public static DuzztAction fromMethod(ExecutableElement methodElement, DSLSettings settings, String docComment) {
 		String name = methodElement.getSimpleName().toString();
 		
 		boolean global = false;
@@ -128,11 +128,12 @@ public class DuzztAction {
 			return null;
 		}
 		
-		return new DuzztAction(methodElement, name, global, terminator, autoVarArgs);
+		return new DuzztAction(methodElement, name, global, terminator, autoVarArgs, docComment);
 	}
 	
 	
 	private final ExecutableElement methodElement;
+	private String docComment;
 	private final List<ParameterInfo> parameters;
 	private final String name;
 	
@@ -142,8 +143,9 @@ public class DuzztAction {
 	
 	
 	public DuzztAction(ExecutableElement methodElement, String name, boolean global,
-			boolean terminator, boolean autoVarArgs) {
+					   boolean terminator, boolean autoVarArgs, String docComment) {
 		this.methodElement = methodElement;
+		this.docComment = docComment;
 		this.parameters = MethodUtils.getParameterInfos(methodElement);
 		this.name = name;
 		this.global = global;
@@ -203,4 +205,11 @@ public class DuzztAction {
 		return parameters;
 	}
 
+	public String getDocComment()
+	{
+		if (docComment == null) {
+			return null;
+		}
+		return "/**\n*" + docComment.replaceAll("\n", "\n*") + "*/";
+	}
 }

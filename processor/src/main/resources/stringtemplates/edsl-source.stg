@@ -93,6 +93,7 @@ state_transition(spec, trans) ::= <<
 >>
 
 nonterm_transition(spec, trans) ::= <<
+<comment(trans.action.docComment)>
 public <generic_params(trans.action.typeParameters)>
 <state_class_name(spec, trans.successor)> <trans.action.name>(<params(trans.action.parameters)>)<throws_spec(trans.action.thrownTypes)> {
 	<access_impl(spec)>.<trans.action.method.simpleName>(<args(trans.action.parameters)>);
@@ -102,6 +103,7 @@ public <generic_params(trans.action.typeParameters)>
 >>
 
 varargs_transition(spec, trans) ::= <<
+<comment(trans.action.docComment)>
 @SafeVarargs
 public final <generic_params(trans.action.typeParameters)>
 <state_class_name(spec, trans.successor)> <trans.action.name>(<params(trans.action.parameters)>, <last(trans.action.parameters).type>... <last(trans.action.parameters).name>s)<throws_spec(trans.action.thrownTypes)> {
@@ -114,6 +116,7 @@ public final <generic_params(trans.action.typeParameters)>
 >>
 
 terminator_transition(spec, action) ::= <<
+<comment(action.docComment)>
 public <generic_params(action.typeParameters)>
 <action.returnType> <action.name>(<params(action.parameters)>)<throws_spec(action.thrownTypes)> {
 	<if(!action.void)>return <endif><access_impl(spec)>.<action.method.simpleName>(<args(action.parameters)>);
@@ -180,3 +183,5 @@ generic_args(tp) ::= <<
 type_parameter(t) ::= <<
 <t><if(t.bounds)> extends <t.bounds; separator=" & "><endif>
 >>
+
+comment(c) ::= "<if(c)><c><endif>"
