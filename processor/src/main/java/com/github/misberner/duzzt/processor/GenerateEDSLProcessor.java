@@ -47,7 +47,7 @@ final class GenerateEDSLProcessor extends AbstractSingleAnnotationProcessor<Gene
 	 */
 	@Override
 	public void pre(APUtils utils) throws Exception, ProcessingException {
-		duzzt.init(utils.getReporter());
+		duzzt.init(utils);
 	}
 
 	/*
