@@ -47,7 +47,7 @@
 				<!-- Disable annotation processing for the main (not test!) compilation phase. -->
 				<executions>
 					<execution>
-						<id>compile</id>
+						<id>default-compile</id>
 						<phase>compile</phase>
 						<goals>
 							<goal>compile</goal>
