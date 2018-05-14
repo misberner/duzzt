@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.processing.Filer;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -42,6 +43,7 @@ import org.stringtemplate.v4.STGroupFile;
 import org.stringtemplate.v4.STWriter;
 
 import com.github.misberner.apcommons.reporting.Reporter;
+import com.github.misberner.apcommons.util.APUtils;
 import com.github.misberner.apcommons.util.ElementUtils;
 import com.github.misberner.duzzt.DuzztDiagnosticListener;
 import com.github.misberner.duzzt.annotations.GenerateEmbeddedDSL;
@@ -109,6 +111,7 @@ public class Duzzt {
 	private static final String ST_MAIN_TEMPLATE_NAME = "edsl_source";
 	
 	private STGroup sourceGenGroup;
+	private boolean isJava9OrNewer;
 	
 	/**
 	 * Default constructor.
@@ -123,10 +126,10 @@ public class Duzzt {
 	/**
 	 * Initialize the Duzzt embedded DSL generator.
 	 * 
-	 * @param reporter the reporter used to report errors
+	 * @param utils the APUtils instance wrapping the {@link javax.annotation.processing.ProcessingEnvironment}
 	 * @throws DuzztInitializationException if a fatal error occurs during initialization
 	 */
-	public void init(Reporter reporter) throws DuzztInitializationException {
+	public void init(APUtils utils) throws DuzztInitializationException {
 		URL url = GenerateEDSLProcessor.class.getResource(ST_RESOURCE_NAME);
 		
 		this.sourceGenGroup = new STGroupFile(
@@ -135,7 +138,7 @@ public class Duzzt {
 				ST_DELIM_START_CHAR,
 				ST_DELIM_STOP_CHAR);
 		
-		sourceGenGroup.setListener(new ReporterDiagnosticListener(reporter));
+		sourceGenGroup.setListener(new ReporterDiagnosticListener(utils.getReporter()));
 		
 		sourceGenGroup.load();
 		if(!sourceGenGroup.isDefined(ST_MAIN_TEMPLATE_NAME)) {
@@ -143,6 +146,8 @@ public class Duzzt {
 			throw new DuzztInitializationException("Could not find main template '"
 					+ ST_MAIN_TEMPLATE_NAME + "' in template group file " + url.toString());
 		}
+
+		this.isJava9OrNewer = isJava9OrNewer(utils.getProcessingEnv().getSourceVersion());
 	}
 	
 	/**
@@ -189,6 +194,25 @@ public class Duzzt {
 		fmt.setTimeZone(tz);
 		return fmt.format(date);
 	}
+
+	private Map<String, Object> buildGeneratorFlags() {
+		final Map<String, Object> result = new HashMap<>();
+
+		result.put("java9OrNewer", this.isJava9OrNewer);
+
+		return result;
+	}
+
+	private static boolean isJava9OrNewer(SourceVersion version) {
+		final String versionNumber = version.name().split("_")[1];
+
+		try {
+			return Integer.parseInt(versionNumber) >= 9;
+		} catch (NumberFormatException nfe) {
+			System.err.println("Could not parse SourceVersion '" + version + '\'');
+			return false;
+		}
+	}
 	
 	private void render(DSLSpecification spec, DuzztAutomaton automaton,
 			Filer filer, ReporterDiagnosticListener diagnosticListener) throws IOException {
@@ -197,6 +221,7 @@ public class Duzzt {
 		tpl.add("automaton", automaton);
 		tpl.add("generatorClass", getClass());
 		tpl.add("generationDate", isoDateFormat(new Date()));
+		tpl.add("flags", buildGeneratorFlags());
 		
 		JavaFileObject jfo = filer.createSourceFile(spec.getQualifiedClassName(), spec.getImplementation().getType());
 		try(BufferedWriter w = new BufferedWriter(jfo.openWriter())) {
