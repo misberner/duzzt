@@ -203,4 +203,17 @@ public class DuzztAction {
 		return parameters;
 	}
 
+	/**
+	 * Checks, if at least one of the parameters of this action has a varargs type.
+	 * @return {@code true}, if one of the parameters of this action has a varargs type, {@code false} otherwise.
+	 */
+	public boolean getHasVarArgsParams() {
+		for (ParameterInfo p : getParameters()) {
+			if (p.isVarArgs()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

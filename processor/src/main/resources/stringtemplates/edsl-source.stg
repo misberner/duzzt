@@ -93,7 +93,8 @@ state_transition(spec, trans) ::= <<
 >>
 
 nonterm_transition(spec, trans) ::= <<
-public <generic_params(trans.action.typeParameters)>
+<if(trans.action.hasVarArgsParams)>@SafeVarargs<endif>
+public final <generic_params(trans.action.typeParameters)>
 <state_class_name(spec, trans.successor)> <trans.action.name>(<params(trans.action.parameters)>)<throws_spec(trans.action.thrownTypes)> {
 	<access_impl(spec)>.<trans.action.method.simpleName>(<args(trans.action.parameters)>);
 	return <access_state(spec, trans.successor)>;
