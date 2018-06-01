@@ -100,9 +100,11 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
+					<version>2.5.3</version>
 					<configuration>
 						<!-- Perform an install into the local repository, otherwise the javadoc plugin and archetype integration tests will fail -->
 						<preparationGoals>clean install</preparationGoals>
+						<tagNameFormat>duzzt-@{version}</tagNameFormat>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -124,6 +126,7 @@
 					<version>3.0.1</version>
 					<configuration>
 						<additionalOptions>${javadoc.opts}</additionalOptions>
+						<additionalparam>${javadoc.opts}</additionalparam>
 					</configuration>
 				</plugin>
 			</plugins>
@@ -138,6 +141,7 @@
 				<version>3.0.1</version>
 				<configuration>
 					<additionalOptions>${javadoc.opts}</additionalOptions>
+					<additionalparam>${javadoc.opts}</additionalparam>
 				</configuration>
 				<reportSets>
 					<reportSet>
