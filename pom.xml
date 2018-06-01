@@ -27,7 +27,7 @@
 
 	<groupId>com.github.misberner.duzzt</groupId>
 	<artifactId>duzzt-parent</artifactId>
-	<version>0.1.0</version>
+	<version>0.1.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 
@@ -69,7 +69,7 @@
 		<connection>scm:git:git@github.com:misberner/duzzt.git</connection>
 		<developerConnection>scm:git:git@github.com:misberner/duzzt.git</developerConnection>
 		<url>https://github.com/misberner/duzzt/tree/master</url>
-	  <tag>duzzt-0.1.0</tag>
+	  <tag>HEAD</tag>
   </scm>
 
 	<properties>
