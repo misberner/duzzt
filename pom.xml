@@ -78,8 +78,6 @@
 		<ap-commons.version>0.0.2</ap-commons.version>
 		<stringtemplate.version>4.0.7</stringtemplate.version>
 		<brics-automaton.version>1.11-8</brics-automaton.version>
-		<!-- For some reason, specifying this in the configuration section of maven-javadoc-plugin doesn't work. -->
-		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 	</properties>
 
 	<build>
@@ -120,6 +118,14 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.0.1</version>
+					<configuration>
+						<additionalOptions>${javadoc.opts}</additionalOptions>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -130,6 +136,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.0.1</version>
+				<configuration>
+					<additionalOptions>${javadoc.opts}</additionalOptions>
+				</configuration>
 				<reportSets>
 					<reportSet>
 						<id>default</id>
@@ -196,5 +205,18 @@
 		<module>processor</module>
 		<module>examples</module>
 	</modules>
+
+	<!-- Disable strict javadoc linting when using Java >= 8. -->
+	<profiles>
+		<profile>
+			<id>doclint-java8-disable</id>
+			<activation>
+				<jdk>[1.8,)</jdk>
+			</activation>
+			<properties>
+				<javadoc.opts>-Xdoclint:none</javadoc.opts>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
