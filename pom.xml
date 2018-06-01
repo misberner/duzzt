@@ -27,7 +27,7 @@
 
 	<groupId>com.github.misberner.duzzt</groupId>
 	<artifactId>duzzt-parent</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 
@@ -78,6 +78,8 @@
 		<ap-commons.version>0.0.2</ap-commons.version>
 		<stringtemplate.version>4.0.7</stringtemplate.version>
 		<brics-automaton.version>1.11-8</brics-automaton.version>
+		<!-- For some reason, specifying this in the configuration section of maven-javadoc-plugin doesn't work. -->
+		<maven.javadoc.failOnError>false</maven.javadoc.failOnError>
 	</properties>
 
 	<build>
@@ -127,7 +129,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
+				<version>3.0.1</version>
 				<reportSets>
 					<reportSet>
 						<id>default</id>
