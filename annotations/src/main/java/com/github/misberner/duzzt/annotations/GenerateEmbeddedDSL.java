@@ -202,4 +202,18 @@ public @interface GenerateEmbeddedDSL {
 	public Visibility delegateConstructorVisibility() default Visibility.PUBLIC;
 	
 	public Visibility forwardConstructorVisibility() default Visibility.PUBLIC;
+
+	/**
+	 * A flag for controlling whether or not the generated DSL class should be annotated with a
+	 * <a href="https://docs.oracle.com/javase/8/docs/api/javax/annotation/Generated.html">javax.annotation.Generated</a>
+	 * (for Java 8 or lower) or a
+	 * <a href="https://docs.oracle.com/javase/9/docs/api/javax/annotation/processing/Generated.html">javax.annotation.processing.Generated</a>
+	 * (Java 9 or newer) annotation.
+	 * <p>
+	 * When cross-version-compiling (e.g. compiling on Java 8 for Java 9+ environments) you may want to skip this
+	 * annotation for compatibility reasons.
+	 * <p>
+	 * The default behavior is to add the respective annotation.
+	 */
+	public boolean skipGeneratedAnnotation() default false;
 }

@@ -61,6 +61,8 @@ public class DSLSettings {
 	
 	private final Visibility delegateConstructorVisibility;
 	private final Visibility forwardConstructorVisibility;
+
+	private final boolean skipGeneratedAnnotation;
 	
 	public DSLSettings(GenerateEmbeddedDSL annotation) {
 		this.name = annotation.name();
@@ -80,6 +82,8 @@ public class DSLSettings {
 
 		this.classPublic = annotation.classPublic();
 		this.modifier = annotation.modifier();
+
+		this.skipGeneratedAnnotation = annotation.skipGeneratedAnnotation();
 	}
 	
 	public String getName() {
@@ -154,5 +158,9 @@ public class DSLSettings {
 
 	public AFModifier getModifier() {
 		return modifier;
+	}
+
+	public boolean isSkipGeneratedAnnotation() {
+		return skipGeneratedAnnotation;
 	}
 }
