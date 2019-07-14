@@ -195,10 +195,11 @@ public class Duzzt {
 		return fmt.format(date);
 	}
 
-	private Map<String, Object> buildGeneratorFlags() {
+	private Map<String, Object> buildGeneratorFlags(DSLSpecification spec) {
 		final Map<String, Object> result = new HashMap<>();
 
 		result.put("java9OrNewer", this.isJava9OrNewer);
+		result.put("skipGeneratedAnnotation", spec.isSkipGeneratedAnnotation());
 
 		return result;
 	}
@@ -221,7 +222,7 @@ public class Duzzt {
 		tpl.add("automaton", automaton);
 		tpl.add("generatorClass", getClass());
 		tpl.add("generationDate", isoDateFormat(new Date()));
-		tpl.add("flags", buildGeneratorFlags());
+		tpl.add("flags", buildGeneratorFlags(spec));
 		
 		JavaFileObject jfo = filer.createSourceFile(spec.getQualifiedClassName(), spec.getImplementation().getType());
 		try(BufferedWriter w = new BufferedWriter(jfo.openWriter())) {

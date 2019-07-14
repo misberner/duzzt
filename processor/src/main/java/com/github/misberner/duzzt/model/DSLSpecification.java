@@ -109,5 +109,8 @@ public class DSLSpecification {
 		return settings.getModifier();
 	}
 
+	public boolean isSkipGeneratedAnnotation() {
+		return settings.isSkipGeneratedAnnotation();
+	}
 
 }
